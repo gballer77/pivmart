@@ -9,7 +9,7 @@
         </http>
         <format>
             <label>
-                <pattern>app=${appName},host=${HOSTNAME},traceID=%X{traceId:-NONE},level=%level</pattern>
+                <pattern>app=${appName},host=${HOSTNAME},traceID=%X{traceId:-NONE},spanID=%X{spanId:-NONE},level=%level</pattern>
             </label>
             <message>
                 <pattern>${FILE_LOG_PATTERN}</pattern>

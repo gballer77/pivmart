@@ -49,7 +49,7 @@ services:
       - SPRING_PROFILES_ACTIVE=async
       - PRODUCT_API_URL=http://monomart-agw:8888
       - RABBIT_HOST=rabbitmq
-      - ZIPKIN_HOST=tempo:9411
+      - ZIPKIN_HOST=zipkin:9411
       - LOKI_HOST=loki:3100
     ports:
       - 8082:8082
@@ -80,7 +80,8 @@ services:
     volumes:
       - /tmp/grafana/storage:/var/lib/grafana
       - ./observability/grafana-datasources.yml:/etc/grafana/provisioning/datasources/grafana-datasources.yml
-      - ./observability/grafana-dashboard.json:/etc/grafana/provisioning/dashboard/grafana-dashboard.json
+      - ./observability/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
+      - ./observability/grafana-dashboard.json:/var/lib/grafana/dashboards/grafana-dashboard.json
 
   zipkin:
     image: openzipkin/zipkin

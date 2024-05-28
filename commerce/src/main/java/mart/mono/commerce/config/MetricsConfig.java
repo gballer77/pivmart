@@ -1,4 +1,4 @@
-package mart.mono.commerce.confiig;
+package mart.mono.commerce.config;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
