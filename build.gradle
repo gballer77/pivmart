@@ -86,6 +86,10 @@ tasks.register('cleanFrontend', Delete) {
     }
 }
 
+resolveMainClassName {
+    dependsOn copyFrontend
+}
+
 // region configure Spring's build dependency chain
 jar {
     dependsOn copyFrontend

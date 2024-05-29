@@ -17,7 +17,7 @@ public class ApplicationRefresh {
     private final RestClient restClient;
     private final ConfigVersionContext configVersionContext;
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 60000)
     public void refreshContext() {
         PropertyResponse response = restClient.get()
             .uri("/application/default")
