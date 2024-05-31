@@ -6,4 +6,4 @@ echo "************** Building Config Server jar file **************"
 ./gradlew clean bootJar
 
 echo "************** Building Config Server docker image **************"
-docker build -t monomart-config-final .
+docker build -t monomart-config:v6.0 .

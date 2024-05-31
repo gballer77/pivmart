@@ -7,7 +7,7 @@ services:
       - 15672:15672
 
   monomart-config:
-    image: monomart-config-final:latest
+    image: monomart-config:v6.0
     container_name: 'monomart-config'
     healthcheck:
       test: ["CMD", "curl", "-f", "http://monomart-config:8083/application/default"]
@@ -18,7 +18,7 @@ services:
       - 8083:8083
 
   monomart:
-    image: monomart-final:latest
+    image: monomart:v6.0
     container_name: 'monomart'
     environment:
       - ZIPKIN_HOST=zipkin:9411
@@ -27,7 +27,7 @@ services:
       - 8080:8080
 
   monomart-agw:
-    image: monomart-agw-final:latest
+    image: monomart-agw:v6.0
     container_name: 'monomart-agw'
     environment:
       - INVENTORY_HOST=host.docker.internal:8081
@@ -43,9 +43,10 @@ services:
       - 8888:8888
 
   monomart-commerce:
-    image: monomart-commerce-final:latest
+    image: monomart-commerce:v6.0
     container_name: 'monomart-commerce'
     environment:
+#      - SPRING_PROFILES_ACTIVE=chaos
       - PRODUCT_API_URL=http://monomart-agw:8888
       - RABBIT_HOST=rabbitmq
       - ZIPKIN_HOST=zipkin:9411
@@ -54,9 +55,10 @@ services:
       - 8082:8082
 
   monomart-inventory:
-    image: monomart-inventory-final:latest
+    image: monomart-inventory:v6.0
     container_name: 'monomart-inventory'
     environment:
+#      - SPRING_PROFILES_ACTIVE=chaos
       - RABBIT_HOST=rabbitmq
       - ZIPKIN_HOST=zipkin:9411
       - LOKI_HOST=loki:3100

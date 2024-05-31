@@ -6,4 +6,4 @@ echo "************** Building Inventory jar file **************"
 ./gradlew clean bootJar
 
 echo "************** Building Inventory docker image **************"
-docker build -t monomart-inventory-final .
+docker build -t monomart-inventory:v6.0 .
