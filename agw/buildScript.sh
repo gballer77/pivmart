@@ -6,4 +6,4 @@ echo "************** Building AGW jar file **************"
 ./gradlew clean bootJar
 
 echo "************** Building AGW docker image **************"
-docker build -t monomart-agw-final .
+docker build -t monomart-agw:v7.0 .

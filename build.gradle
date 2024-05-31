@@ -6,7 +6,7 @@ plugins {
 
 group = 'mart.mono'
 version = '1.0.0'
-sourceCompatibility = '17'
+sourceCompatibility = '21'
 
 configurations {
     compileOnly {
@@ -84,6 +84,10 @@ tasks.register('cleanFrontend', Delete) {
     doLast {
         println "deleted frontend artifacts"
     }
+}
+
+resolveMainClassName {
+    dependsOn copyFrontend
 }
 
 // region configure Spring's build dependency chain

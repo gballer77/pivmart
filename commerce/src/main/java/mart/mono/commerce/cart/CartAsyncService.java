@@ -1,5 +1,7 @@
 package mart.mono.commerce.cart;
 
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.contextpropagation.ObservationThreadLocalAccessor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import mart.mono.commerce.product.ProductEntity;
@@ -23,8 +25,9 @@ public class CartAsyncService implements CartService {
     private final CartItemRetriever cartItemRetriever;
 
     public List<CartItem> get() {
+        Observation value = ObservationThreadLocalAccessor.getInstance().getValue();
         List<CompletableFuture<CartItem>> futuresList = cartRepository.findAll().stream()
-            .map(cartItemRetriever::toCartItem)
+            .map(cartItem -> cartItemRetriever.toCartItem(cartItem, value))
             .toList();
 
         return futuresList.stream()
@@ -39,12 +42,13 @@ public class CartAsyncService implements CartService {
 
     @SneakyThrows
     public CartItem add(Product product) {
+        Observation value = ObservationThreadLocalAccessor.getInstance().getValue();
         ProductEntity cartProduct = new ProductEntity(product.getId(), product.getName(), product.getPrice());
         CartItemEntity savedCartItem = cartRepository.save(CartItemEntity.builder()
             .product(cartProduct)
             .quantity(1)
             .build());
-        return cartItemRetriever.toCartItem(savedCartItem).get();
+        return cartItemRetriever.toCartItem(savedCartItem, value).get();
     }
 
     public void remove(UUID cartItemId) {

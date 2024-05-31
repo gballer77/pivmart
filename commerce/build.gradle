@@ -6,7 +6,7 @@ plugins {
 
 group = 'mart.mono.commerce'
 version = '1.0.0'
-sourceCompatibility = '17'
+sourceCompatibility = '21'
 
 configurations {
     compileOnly {

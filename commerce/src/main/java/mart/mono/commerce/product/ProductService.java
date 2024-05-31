@@ -22,7 +22,7 @@ public class ProductService implements IProductService {
 
     @Override
     public Product getProductById(UUID productId) {
-        log.info("Retrieving product details for {}", productId);
+        log.info("Retrieving product details for {} on thread {}", productId, Thread.currentThread().isVirtual());
         return restClient.get()
             .uri("/api/products/{0}", productId)
             .retrieve()

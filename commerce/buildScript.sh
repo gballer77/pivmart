@@ -6,4 +6,4 @@ echo "************** Building Commerce jar file **************"
 ./gradlew clean bootJar
 
 echo "************** Building Commerce docker image **************"
-docker build -t monomart-commerce-final .
+docker build -t monomart-commerce:v7.0 .
