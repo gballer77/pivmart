@@ -27,7 +27,7 @@ public class CartRestController {
     }
 
     @PutMapping("api/v1/cart/{id}")
-    public List<CartItem> remove(@PathVariable UUID id) {
+    public List<CartItem> remove(@PathVariable(name = "id") UUID id) {
         cartService.remove(id);
         return cartService.get();
     }

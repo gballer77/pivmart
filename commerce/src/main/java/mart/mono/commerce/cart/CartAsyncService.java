@@ -4,20 +4,25 @@ import io.micrometer.observation.Observation;
 import io.micrometer.observation.contextpropagation.ObservationThreadLocalAccessor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import mart.mono.commerce.product.ProductEntity;
 import mart.mono.commerce.purchase.PurchasesService;
 import mart.mono.inventory.lib.Product;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 @Service
 @RequiredArgsConstructor
 @Profile("async")
+@Slf4j
 public class CartAsyncService implements CartService {
 
     private final CartRepository cartRepository;
@@ -26,7 +31,7 @@ public class CartAsyncService implements CartService {
 
     public List<CartItem> get() {
         Observation value = ObservationThreadLocalAccessor.getInstance().getValue();
-        List<CompletableFuture<CartItem>> futuresList = cartRepository.findAll().stream()
+        List<Future<CartItem>> futuresList = cartRepository.findAll().stream()
             .map(cartItem -> cartItemRetriever.toCartItem(cartItem, value))
             .toList();
 
@@ -36,7 +41,7 @@ public class CartAsyncService implements CartService {
     }
 
     @SneakyThrows
-    private CartItem getCartItemFromFuture(CompletableFuture<CartItem> cartItemCompletableFuture) {
+    private CartItem getCartItemFromFuture(Future<CartItem> cartItemCompletableFuture) {
         return cartItemCompletableFuture.get();
     }
 

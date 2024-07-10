@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 @Component
 @RequiredArgsConstructor
@@ -16,8 +17,8 @@ public class CartItemRetriever {
     private final IProductService productService;
 
     @Async
-    public CompletableFuture<CartItem> toCartItem(CartItemEntity cartItemEntity, Observation value) {
-        ObservationThreadLocalAccessor.getInstance().setValue(value);
+    public Future<CartItem> toCartItem(CartItemEntity cartItemEntity, Observation observation) {
+        ObservationThreadLocalAccessor.getInstance().setValue(observation);
         return CompletableFuture.completedFuture(CartItem.builder()
             .id(cartItemEntity.getId())
             .quantity(cartItemEntity.getQuantity())

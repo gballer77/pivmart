@@ -1,20 +1,33 @@
 package mart.mono.commerce;
 
 import mart.mono.commerce.cart.CartService;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.util.TestSocketUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import java.io.IOException;
+
 import static org.hamcrest.Matchers.*;
+import static org.springframework.http.HttpHeaders.*;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -23,12 +36,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-public class CommerceTests {
+class CommerceTests {
+
+    static int managementPort = TestSocketUtils.findAvailableTcpPort();
+
     @Autowired
     MockMvc mockMvc;
 
     @Autowired
     CartService cartService;
+
+    MockWebServer mockWebServer;
+
+    @DynamicPropertySource
+    static void registerDomains(DynamicPropertyRegistry registry) {
+        registry.add("productapi.url", () -> "http://localhost:" + managementPort);
+    }
 
     private static JSONObject getV1ProductObject() throws JSONException {
         JSONObject jsonPayload = new JSONObject();
@@ -54,12 +77,25 @@ public class CommerceTests {
     }
 
     @BeforeEach
-    void clearCart() {
+    void clearCart() throws Exception {
         cartService.removeAll();
+
+        mockWebServer = new MockWebServer();
+        mockWebServer.start(managementPort);
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        mockWebServer.shutdown();
     }
 
     private ResultActions addV1ItemToCart() throws Exception {
         JSONObject jsonPayload = getV1ProductObject();
+        mockWebServer.enqueue(new MockResponse()
+            .setResponseCode(OK.value())
+            .setHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+            .setBody(jsonPayload.toString())
+        );
 
         MockHttpServletRequestBuilder request = post("/api/v1/cart")
             .contentType(APPLICATION_JSON)
@@ -67,6 +103,7 @@ public class CommerceTests {
 
         return mockMvc.perform(request);
     }
+
     private ResultActions addV2ItemToCart() throws Exception {
         JSONObject jsonPayload = getV2ProductObject();
 
@@ -99,6 +136,11 @@ public class CommerceTests {
 
     @Test
     void removeItemFromCartContractTest() throws Exception {
+        mockWebServer.enqueue(new MockResponse()
+            .setResponseCode(OK.value())
+            .setHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+            .setBody("{}")
+        );
         ResultActions result = addV2ItemToCart();
         JSONObject resultJson = new JSONObject(result.andReturn().getResponse().getContentAsString());
 
