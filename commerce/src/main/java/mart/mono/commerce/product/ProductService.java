@@ -22,11 +22,23 @@ public class ProductService implements IProductService {
 
     @Override
     public Product getProductById(UUID productId) {
-        log.info("Retrieving product details for {} on thread {}", productId, Thread.currentThread().isVirtual());
+        log.info("Retrieving product details for {}", productId);
+        return getProductById(productId, 3);
+    }
+
+    private Product getProductById(UUID productId, int retryCount) {
+        try {
         return restClient.get()
             .uri("/api/products/{0}", productId)
             .retrieve()
             .body(Product.class);
+        } catch (Exception e) {
+            log.error("Error retrieving product details for {}", productId, e);
+            if (retryCount > 0) {
+                return getProductById(productId, retryCount - 1);
+            }
+            throw e;
+        }
     }
 
     @Override
