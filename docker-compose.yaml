@@ -17,6 +17,17 @@ services:
     ports:
       - 8083:8083
 
+  postgres:
+    image: 'postgres:latest'
+    volumes:
+      - ./postgres:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES=commercedatabase,inventorydatabase
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=appuser
+    ports:
+      - '5432:5432'
+
   monomart:
     image: monomart:v6.0
     container_name: 'monomart'
@@ -51,6 +62,7 @@ services:
       - RABBIT_HOST=rabbitmq
       - ZIPKIN_HOST=zipkin:9411
       - LOKI_HOST=loki:3100
+      - POSTGRES_HOST=postgres
     ports:
       - 8082:8082
 
@@ -62,6 +74,7 @@ services:
       - RABBIT_HOST=rabbitmq
       - ZIPKIN_HOST=zipkin:9411
       - LOKI_HOST=loki:3100
+      - POSTGRES_HOST=postgres
     ports:
       - 8081:8081
 

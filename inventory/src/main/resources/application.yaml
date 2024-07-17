@@ -4,12 +4,16 @@ server:
 spring:
   application:
     name: inventory
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:inventorydatabase}
+    username: ${POSTGRES_USERNAME:appuser}
+    password: ${POSTGRES_PASSWORD:secret}
   flyway:
     locations: db/migration, db/data/prod
   cloud:
+    function:
+      definition: purchaseEvent
     stream:
-      function:
-        definition: purchaseEvent
       bindings:
         purchaseEvent-in-0:
           destination: purchase-topic

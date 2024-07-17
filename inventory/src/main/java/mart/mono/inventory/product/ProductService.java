@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -53,23 +52,19 @@ public class ProductService implements IProductService {
     }
 
     public void decrementProductQuantity(UUID productId, int quantity) {
-        Optional<ProductEntity> product = productRepository.findById(productId);
-        if(product.isPresent()) {
-            ProductEntity updatedProduct = product.get();
-            int currentQuantity = product.get().getQuantity();
+        productRepository.findById(productId).ifPresent(productEntity -> {
+            int currentQuantity = productEntity.getQuantity();
             int newQuantity = currentQuantity - quantity;
-
             if (newQuantity < 0) {
                 return;
             }
-
-            updatedProduct.setQuantity(newQuantity);
-            productRepository.save(updatedProduct);
-        }
+            productEntity.setQuantity(newQuantity);
+            productRepository.save(productEntity);
+        });
     }
 
     public void processPurchaseEvent(PurchaseEvent purchaseEvent) {
         log.info("Processing Event {}", purchaseEvent);
-        decrementProductQuantity(purchaseEvent.getProductId(),purchaseEvent.getQuantity());
+        decrementProductQuantity(purchaseEvent.getProductId(), purchaseEvent.getQuantity());
     }
 }

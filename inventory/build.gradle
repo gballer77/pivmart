@@ -34,13 +34,13 @@ dependencies {
     implementation 'io.micrometer:micrometer-tracing-bridge-brave'
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
-//    implementation 'net.ttddyy.observation:datasource-micrometer-spring-boot:1.0.3'
+    implementation 'net.ttddyy.observation:datasource-micrometer-spring-boot:1.0.5'
     implementation 'com.github.loki4j:loki-logback-appender:1.4.1'
     implementation 'org.flywaydb:flyway-core'
+    runtimeOnly 'org.postgresql:postgresql'
 
     implementation(project(':inventory-lib'))
 
-    runtimeOnly 'com.h2database:h2:2.2.224'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
@@ -48,6 +48,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
+    testRuntimeOnly 'com.h2database:h2:2.2.224'
 }
 
 dependencyManagement {
