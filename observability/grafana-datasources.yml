@@ -1,11 +1,16 @@
 apiVersion: 1
 
 datasources:
-  - name: Zipkin
-    uid: my_zipkin_uid
-    type: zipkin
+  - name: Tempo
+    uid: my_tempo_uid
+    type: tempo
     access: proxy
-    url: http://zipkin:9411
+    url: http://tempo:3200
+    editable: true
+    serviceMap:
+      dataSourceId: my_prometheus_uid
+    lokiSearch:
+      dataSourceId: my_loki_uid
     jsonData:
       nodeGraph:
         enabled: true
@@ -15,7 +20,6 @@ datasources:
         spanStartTimeShift: "1h"
         spanEndTimeShift: "-1h"
         query: '{traceID="$${__span.traceId}", spanID="$${__span.spanId}"}'
-    editable: true
   - name: Loki
     uid: my_loki_uid
     type: loki
@@ -24,7 +28,7 @@ datasources:
     jsonData:
       maxLines: 1000
       derivedFields:
-        - datasourceUid: my_zipkin_uid
+        - datasourceUid: my_tempo_uid
           matcherRegex: "\\[(\\d.{31})-"
           name: traceID
           url: '$${__value.raw}'

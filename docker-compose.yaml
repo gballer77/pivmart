@@ -32,7 +32,7 @@ services:
     image: monomart:v6.0
     container_name: 'monomart'
     environment:
-      - ZIPKIN_HOST=zipkin:9411
+      - ZIPKIN_HOST=tempo:9411
       - LOKI_HOST=loki:3100
     ports:
       - 8080:8080
@@ -45,7 +45,7 @@ services:
       - COMMERCE_HOST=host.docker.internal:8082
       - MONOMART_HOST=host.docker.internal:8080
       - CONFIG_SERVER_HOST=host.docker.internal:8083
-      - ZIPKIN_HOST=zipkin:9411
+      - ZIPKIN_HOST=tempo:9411
       - LOKI_HOST=loki:3100
     depends_on:
       monomart-config:
@@ -60,7 +60,7 @@ services:
 #      - SPRING_PROFILES_ACTIVE=chaos
       - PRODUCT_API_URL=http://monomart-agw:8888
       - RABBIT_HOST=rabbitmq
-      - ZIPKIN_HOST=zipkin:9411
+      - ZIPKIN_HOST=tempo:9411
       - LOKI_HOST=loki:3100
       - POSTGRES_HOST=postgres
     ports:
@@ -72,7 +72,7 @@ services:
     environment:
 #      - SPRING_PROFILES_ACTIVE=chaos
       - RABBIT_HOST=rabbitmq
-      - ZIPKIN_HOST=zipkin:9411
+      - ZIPKIN_HOST=tempo:9411
       - LOKI_HOST=loki:3100
       - POSTGRES_HOST=postgres
     ports:
@@ -97,10 +97,15 @@ services:
       - ./observability/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
       - ./observability/grafana-dashboard.json:/var/lib/grafana/dashboards/grafana-dashboard.json
 
-  zipkin:
-    image: openzipkin/zipkin
+  tempo:
+    image: grafana/tempo
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./observability/tempo-local.yaml:/etc/tempo.yaml:ro
+      - ./tempo-data:/tmp/tempo
     ports:
-      - "9411:9411"
+      - "14268"  # jaeger ingest
+      - "9411:9411" # zipkin
 
   loki:
     image: grafana/loki:2.8.2

@@ -27,6 +27,12 @@ spring:
 #          - Path=/**
 
 management:
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
   tracing:
     enabled: true
     sampling.probability: 1.0

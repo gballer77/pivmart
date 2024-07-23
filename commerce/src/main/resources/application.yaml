@@ -20,6 +20,12 @@ productapi:
   url: ${PRODUCT_API_URL:http://localhost:8888/}
 
 management:
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
   tracing:
     enabled: true
     sampling.probability: 1.0
